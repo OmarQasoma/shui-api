@@ -13,9 +13,21 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/OmarQasoma/shui-api/issues"
   },
-  "homepage": "https://github.com/OmarQasoma/shui-api#readme"
+  "homepage": "https://github.com/OmarQasoma/shui-api#readme",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1175.0",
+    "@aws-sdk/lib-dynamodb": "^3.1175.0",
+    "@middy/core": "^7.9.2",
+    "@middy/http-json-body-parser": "^7.9.2",
+    "bcryptjs": "^3.0.3",
+    "jsonwebtoken": "^9.0.3",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "serverless": "^4.46.0"
+  }
 }
