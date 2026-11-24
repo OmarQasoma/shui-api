@@ -83,6 +83,41 @@ functions:
           path: /auth/login
           method: post
 
+  createPost:
+    handler: src/handlers/createPost.handler
+    events:
+      - httpApi:
+          path: /posts
+          method: post
+
+  getPosts:
+    handler: src/handlers/getPosts.handler
+    events:
+      - httpApi:
+          path: /posts
+          method: get
+
+  getPost:
+    handler: src/handlers/getPost.handler
+    events:
+      - httpApi:
+          path: /posts/{postId}
+          method: get
+
+  updatePost:
+    handler: src/handlers/updatePost.handler
+    events:
+      - httpApi:
+          path: /posts/{postId}
+          method: put
+
+  deletePost:
+    handler: src/handlers/deletePost.handler
+    events:
+      - httpApi:
+          path: /posts/{postId}
+          method: delete
+
 resources:
   Resources:
     UsersTable:
