@@ -1,0 +1,40 @@
+service: shui-api
+
+frameworkVersion: '4'
+
+provider:
+  name: aws
+  runtime: nodejs24.x
+  region: eu-north-1
+  stage: dev
+
+  deploymentBucket:
+    name: ${file(./local.yml):deploymentBucket}
+
+  iam:
+    deploymentRole: ${file(./local.yml):deploymentRole}
+
+package:
+  patterns:
+    - '!local.yml'
+    - '!local.yaml'
+    - '!local.example.yml'
+    - '!.env*'
+    - '!.aws/**'
+    - '!.serverlessrc'
+    - '!**/*.pem'
+    - '!**/*.key'
+    - '!**/*.p12'
+    - '!**/*.pfx'
+    - '!**/*accessKeys*.csv'
+    - '!**/*credentials*.csv'
+    - '!**/credentials'
+    - '!**/secrets.*'
+
+functions:
+  health:
+    handler: src/handlers/health.handler
+    events:
+      - httpApi:
+          path: /health
+          method: get

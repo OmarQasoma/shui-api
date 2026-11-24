@@ -155,3 +155,30 @@ vite.config.ts.timestamp-*
 .nx/cache
 .nx/workspace-data
 .nx/migrate-runs
+
+# ==========================================
+# Shui API - Security & Local Configuration
+# ==========================================
+
+# Local Serverless configuration
+local.yml
+local.yaml
+.serverlessrc
+
+# AWS credentials
+.aws/
+credentials
+*accessKeys*.csv
+*credentials*.csv
+
+# Secrets and private keys
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.json
+secrets.yml
+secrets.yaml
+
+# macOS
+.DS_Store
