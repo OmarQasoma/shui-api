@@ -1,12 +1,12 @@
+import middy from "@middy/core";
+import { sendResponse } from "../responses/index.mjs";
+import { errorHandler } from "../middlewares/errorHandler.mjs";
 
-export const handler = async () => {
-  return {
-    statusCode: 200,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      message: "Shui API is running",
-    }),
-  };
+const healthHandler = async () => {
+  return sendResponse(200, {
+    message: "Shui API is running",
+  });
 };
+
+export const handler = middy(healthHandler)
+  .use(errorHandler());
