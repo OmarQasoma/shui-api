@@ -14,6 +14,32 @@ provider:
   iam:
     deploymentRole: ${file(./local.yml):deploymentRole}
 
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+          Resource:
+            - Fn::GetAtt: [UsersTable, Arn]
+
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:Scan
+          Resource:
+            - Fn::GetAtt: [PostsTable, Arn]
+
+  environment:
+    USERS_TABLE:
+      Ref: UsersTable
+    POSTS_TABLE:
+      Ref: PostsTable
+    JWT_SECRET: ${file(./local.yml):jwtSecret}
+
 package:
   patterns:
     - '!local.yml'
@@ -38,3 +64,82 @@ functions:
       - httpApi:
           path: /health
           method: get
+
+  register:
+    handler: src/handlers/register.handler
+    memorySize: 512
+    timeout: 10
+    events:
+      - httpApi:
+          path: /auth/register
+          method: post
+
+  login:
+    handler: src/handlers/login.handler
+    memorySize: 512
+    timeout: 10
+    events:
+      - httpApi:
+          path: /auth/login
+          method: post
+
+  createPost:
+    handler: src/handlers/createPost.handler
+    events:
+      - httpApi:
+          path: /posts
+          method: post
+
+  getPosts:
+    handler: src/handlers/getPosts.handler
+    events:
+      - httpApi:
+          path: /posts
+          method: get
+
+  getPost:
+    handler: src/handlers/getPost.handler
+    events:
+      - httpApi:
+          path: /posts/{postId}
+          method: get
+
+  updatePost:
+    handler: src/handlers/updatePost.handler
+    events:
+      - httpApi:
+          path: /posts/{postId}
+          method: put
+
+  deletePost:
+    handler: src/handlers/deletePost.handler
+    events:
+      - httpApi:
+          path: /posts/{postId}
+          method: delete
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${sls:stage}-users
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+
+    PostsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${sls:stage}-posts
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
