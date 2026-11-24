@@ -38,6 +38,7 @@ provider:
       Ref: UsersTable
     POSTS_TABLE:
       Ref: PostsTable
+    JWT_SECRET: ${file(./local.yml):jwtSecret}
 
 package:
   patterns:
@@ -71,6 +72,15 @@ functions:
     events:
       - httpApi:
           path: /auth/register
+          method: post
+
+  login:
+    handler: src/handlers/login.handler
+    memorySize: 512
+    timeout: 10
+    events:
+      - httpApi:
+          path: /auth/login
           method: post
 
 resources:
