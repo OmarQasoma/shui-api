@@ -64,6 +64,15 @@ functions:
           path: /health
           method: get
 
+  register:
+    handler: src/handlers/register.handler
+    memorySize: 512
+    timeout: 10
+    events:
+      - httpApi:
+          path: /auth/register
+          method: post
+
 resources:
   Resources:
     UsersTable:
