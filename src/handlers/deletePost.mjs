@@ -3,10 +3,15 @@ import middy from "@middy/core";
 import { sendError } from "../responses/index.mjs";
 import { errorHandler } from "../middlewares/errorHandler.mjs";
 import { authMiddleware } from "../middlewares/authMiddleware.mjs";
+
 import {
   getPostById,
   deletePost,
 } from "../repositories/postRepository.mjs";
+
+import {
+  deleteCommentsByPostId,
+} from "../repositories/commentRepository.mjs";
 
 const deletePostHandler = async (event) => {
   const { postId } = event.pathParameters;
@@ -37,6 +42,8 @@ const deletePostHandler = async (event) => {
 
     throw error;
   }
+
+  await deleteCommentsByPostId(postId);
 
   return {
     statusCode: 204,

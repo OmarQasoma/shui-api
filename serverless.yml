@@ -33,13 +33,22 @@ provider:
           Resource:
             - Fn::GetAtt: [PostsTable, Arn]
 
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:PutItem
+            - dynamodb:DeleteItem
+          Resource:
+            - Fn::GetAtt: [CommentsTable, Arn]
+
   environment:
     USERS_TABLE:
       Ref: UsersTable
     POSTS_TABLE:
       Ref: PostsTable
+    COMMENTS_TABLE:
+      Ref: CommentsTable
     JWT_SECRET: ${file(./local.yml):jwtSecret}
-
 package:
   patterns:
     - '!local.yml'
@@ -143,3 +152,32 @@ resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
+
+    CommentsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${sls:stage}-comments
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: postId
+            AttributeType: S
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: postId
+            KeyType: HASH
+          - AttributeName: id
+            KeyType: RANGE
+  createComment:
+    handler: src/handlers/createComment.handler
+    events:
+      - httpApi:
+          path: /posts/{postId}/comments
+          method: post
+
+  getComments:
+    handler: src/handlers/getComments.handler
+    events:
+      - httpApi:
+          path: /posts/{postId}/comments
+          method: get
