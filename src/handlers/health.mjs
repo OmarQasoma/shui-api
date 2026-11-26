@@ -8,5 +8,4 @@ const healthHandler = async () => {
   });
 };
 
-export const handler = middy(healthHandler)
-  .use(errorHandler());
+export const handler = middy(healthHandler).use(errorHandler());

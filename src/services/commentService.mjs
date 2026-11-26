@@ -24,14 +24,9 @@ const ensurePostExists = async (postId) => {
   return post;
 };
 
-
 // Create a comment
 
-export const createNewComment = async (
-  postId,
-  username,
-  { content }
-) => {
+export const createNewComment = async (postId, username, { content }) => {
   await ensurePostExists(postId);
 
   const comment = {
@@ -52,7 +47,6 @@ export const createNewComment = async (
     throw error;
   }
 };
-
 
 // Retrieve comments
 

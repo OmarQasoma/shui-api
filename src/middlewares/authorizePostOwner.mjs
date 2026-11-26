@@ -26,10 +26,7 @@ export const authorizePostOwner = ({
       return sendError(404, "Post not found");
     }
 
-    if (
-      post.isGuest !== false ||
-      post.username !== event.user.username
-    ) {
+    if (post.isGuest !== false || post.username !== event.user.username) {
       return sendError(403, forbiddenMessage);
     }
 

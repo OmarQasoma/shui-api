@@ -32,7 +32,7 @@ export const createComment = async (comment) => {
           },
         },
       ],
-    })
+    }),
   );
 
   return comment;
@@ -52,16 +52,14 @@ export const getCommentsByPostId = async (postId) => {
         },
         ExclusiveStartKey: lastKey,
         ConsistentRead: true,
-      })
+      }),
     );
 
     comments.push(...(result.Items ?? []));
     lastKey = result.LastEvaluatedKey;
   } while (lastKey);
 
-  return comments.sort((a, b) =>
-    a.createdAt.localeCompare(b.createdAt)
-  );
+  return comments.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 };
 
 export const deleteCommentsByPostId = async (postId) => {
@@ -75,7 +73,7 @@ export const deleteCommentsByPostId = async (postId) => {
           postId,
           id: comment.id,
         },
-      })
+      }),
     );
   }
 };

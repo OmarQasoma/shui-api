@@ -5,8 +5,7 @@ export const authMiddleware = ({ required = true } = {}) => ({
   before: async (request) => {
     const headers = request.event.headers ?? {};
 
-    const authorization =
-      headers.authorization ?? headers.Authorization;
+    const authorization = headers.authorization ?? headers.Authorization;
 
     request.event.user = null;
 
@@ -40,8 +39,9 @@ export const authMiddleware = ({ required = true } = {}) => ({
       };
     } catch (error) {
       if (
-        ["JsonWebTokenError", "TokenExpiredError", "NotBeforeError"]
-          .includes(error.name)
+        ["JsonWebTokenError", "TokenExpiredError", "NotBeforeError"].includes(
+          error.name,
+        )
       ) {
         return sendError(401, "Invalid or expired token");
       }

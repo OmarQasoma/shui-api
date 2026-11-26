@@ -16,22 +16,19 @@ export const createPost = async (post) => {
       TableName: TABLE_NAME,
       Item: post,
       ConditionExpression: "attribute_not_exists(id)",
-    })
+    }),
   );
 
   return post;
 };
 
-export const getPostById = async (
-  id,
-  { includePending = false } = {}
-) => {
+export const getPostById = async (id, { includePending = false } = {}) => {
   const result = await db.send(
     new GetCommand({
       TableName: TABLE_NAME,
       Key: { id },
       ConsistentRead: true,
-    })
+    }),
   );
 
   const post = result.Item;
@@ -57,7 +54,7 @@ export const getAllPosts = async (username) => {
         TableName: TABLE_NAME,
         ExclusiveStartKey: lastKey,
         ConsistentRead: true,
-      })
+      }),
     );
 
     posts.push(...(result.Items ?? []));
@@ -70,12 +67,7 @@ export const getAllPosts = async (username) => {
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 };
 
-export const updatePost = async (
-  id,
-  username,
-  title,
-  content
-) => {
+export const updatePost = async (id, username, title, content) => {
   const result = await db.send(
     new UpdateCommand({
       TableName: TABLE_NAME,
@@ -92,7 +84,7 @@ export const updatePost = async (
         ":isGuest": false,
       },
       ReturnValues: "ALL_NEW",
-    })
+    }),
   );
 
   return result.Attributes;
@@ -111,7 +103,7 @@ export const markPostForDeletion = async (id, username) => {
         ":username": username,
         ":isGuest": false,
       },
-    })
+    }),
   );
 };
 
@@ -127,6 +119,6 @@ export const deletePost = async (id, username) => {
         ":isGuest": false,
         ":pending": true,
       },
-    })
+    }),
   );
 };

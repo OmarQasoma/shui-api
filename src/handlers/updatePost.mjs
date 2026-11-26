@@ -13,7 +13,7 @@ const updatePostHandler = async (event) => {
   const post = await editPost(
     event.pathParameters.postId,
     event.user.username,
-    event.body
+    event.body,
   );
 
   return sendResponse(200, {
@@ -26,7 +26,9 @@ export const handler = middy(updatePostHandler)
   .use(authMiddleware())
   .use(httpJsonBodyParser())
   .use(validateBody(updatePostSchema))
-  .use(authorizePostOwner({
-    forbiddenMessage: "You cannot update this post",
-  }))
+  .use(
+    authorizePostOwner({
+      forbiddenMessage: "You cannot update this post",
+    }),
+  )
   .use(errorHandler());

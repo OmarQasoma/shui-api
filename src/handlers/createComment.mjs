@@ -12,7 +12,7 @@ const createCommentHandler = async (event) => {
   const comment = await createNewComment(
     event.pathParameters?.postId,
     event.user.username,
-    event.body
+    event.body,
   );
 
   return sendResponse(201, {

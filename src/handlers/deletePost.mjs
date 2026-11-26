@@ -6,10 +6,7 @@ import { authorizePostOwner } from "../middlewares/authorizePostOwner.mjs";
 import { removePost } from "../services/postService.mjs";
 
 const deletePostHandler = async (event) => {
-  await removePost(
-    event.pathParameters.postId,
-    event.user.username
-  );
+  await removePost(event.pathParameters.postId, event.user.username);
 
   return {
     statusCode: 204,
@@ -18,8 +15,10 @@ const deletePostHandler = async (event) => {
 
 export const handler = middy(deletePostHandler)
   .use(authMiddleware())
-  .use(authorizePostOwner({
-    includePending: true,
-    forbiddenMessage: "You cannot delete this post",
-  }))
+  .use(
+    authorizePostOwner({
+      includePending: true,
+      forbiddenMessage: "You cannot delete this post",
+    }),
+  )
   .use(errorHandler());

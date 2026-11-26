@@ -6,9 +6,11 @@ import { errorHandler } from "../middlewares/errorHandler.mjs";
 import { validateQuery } from "../middlewares/validateQuery.mjs";
 import { listPosts } from "../services/postService.mjs";
 
-const querySchema = z.object({
-  username: z.string().trim().min(1).max(50).optional(),
-}).strict();
+const querySchema = z
+  .object({
+    username: z.string().trim().min(1).max(50).optional(),
+  })
+  .strict();
 
 const getPostsHandler = async (event) => {
   const { username } = event.queryStringParameters;

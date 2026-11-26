@@ -1,9 +1,6 @@
 import bcrypt from "bcryptjs";
 
-import {
-  scrypt,
-  timingSafeEqual,
-} from "node:crypto";
+import { scrypt, timingSafeEqual } from "node:crypto";
 
 import { promisify } from "node:util";
 
@@ -26,10 +23,7 @@ export const hashPassword = async (password) => {
   return bcrypt.hash(password, SALT_ROUNDS);
 };
 
-export const verifyPassword = async (
-  password,
-  storedHash
-) => {
+export const verifyPassword = async (password, storedHash) => {
   if (typeof storedHash !== "string") {
     return false;
   }
@@ -51,12 +45,7 @@ export const verifyPassword = async (
 
   const originalHash = Buffer.from(hash, "hex");
 
-  const suppliedHash = await scryptAsync(
-    password,
-    salt,
-    64,
-    legacyOptions
-  );
+  const suppliedHash = await scryptAsync(password, salt, 64, legacyOptions);
 
   return (
     originalHash.length === suppliedHash.length &&

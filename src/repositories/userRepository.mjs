@@ -1,7 +1,4 @@
-import {
-  GetCommand,
-  PutCommand,
-} from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 
 import { db } from "../services/db.mjs";
 
@@ -13,7 +10,7 @@ export const getUserByUsername = async (username) => {
       TableName: TABLE_NAME,
       Key: { username },
       ConsistentRead: true,
-    })
+    }),
   );
 
   return result.Item ?? null;
@@ -25,7 +22,7 @@ export const createUser = async (user) => {
       TableName: TABLE_NAME,
       Item: user,
       ConditionExpression: "attribute_not_exists(username)",
-    })
+    }),
   );
 
   return user;
