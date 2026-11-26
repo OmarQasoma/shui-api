@@ -1,49 +1,12 @@
 import middy from "@middy/core";
 
-import { sendError } from "../responses/index.mjs";
 import { errorHandler } from "../middlewares/errorHandler.mjs";
 import { authMiddleware } from "../middlewares/authMiddleware.mjs";
-
-import {
-  getPostById,
-  deletePost,
-} from "../repositories/postRepository.mjs";
-
-import {
-  deleteCommentsByPostId,
-} from "../repositories/commentRepository.mjs";
+import { authorizePostOwner } from "../middlewares/authorizePostOwner.mjs";
+import { removePost } from "../services/postService.mjs";
 
 const deletePostHandler = async (event) => {
-  const { postId } = event.pathParameters;
-  const { username } = event.user;
-
-  const post = await getPostById(postId);
-
-  if (!post) {
-    return sendError(404, "Post not found");
-  }
-
-  if (post.isGuest || post.username !== username) {
-    return sendError(403, "You cannot delete this post");
-  }
-
-  try {
-    await deletePost(postId, username);
-  } catch (error) {
-    if (error.name === "ConditionalCheckFailedException") {
-      const currentPost = await getPostById(postId);
-
-      if (!currentPost) {
-        return sendError(404, "Post not found");
-      }
-
-      return sendError(403, "You cannot delete this post");
-    }
-
-    throw error;
-  }
-
-  await deleteCommentsByPostId(postId);
+  await removePost(event.pathParameters.postId, event.user.username);
 
   return {
     statusCode: 204,
@@ -52,4 +15,10 @@ const deletePostHandler = async (event) => {
 
 export const handler = middy(deletePostHandler)
   .use(authMiddleware())
+  .use(
+    authorizePostOwner({
+      includePending: true,
+      forbiddenMessage: "You cannot delete this post",
+    }),
+  )
   .use(errorHandler());

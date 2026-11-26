@@ -1,5 +1,5 @@
 import {
-  PutCommand,
+  TransactWriteCommand,
   QueryCommand,
   DeleteCommand,
 } from "@aws-sdk/lib-dynamodb";
@@ -7,15 +7,32 @@ import {
 import { db } from "../services/db.mjs";
 
 const TABLE_NAME = process.env.COMMENTS_TABLE;
+const POSTS_TABLE = process.env.POSTS_TABLE;
 
 export const createComment = async (comment) => {
   await db.send(
-    new PutCommand({
-      TableName: TABLE_NAME,
-      Item: comment,
-      ConditionExpression:
-        "attribute_not_exists(postId) AND attribute_not_exists(id)",
-    })
+    new TransactWriteCommand({
+      TransactItems: [
+        {
+          ConditionCheck: {
+            TableName: POSTS_TABLE,
+            Key: {
+              id: comment.postId,
+            },
+            ConditionExpression:
+              "attribute_exists(id) AND attribute_not_exists(deletionPending)",
+          },
+        },
+        {
+          Put: {
+            TableName: TABLE_NAME,
+            Item: comment,
+            ConditionExpression:
+              "attribute_not_exists(postId) AND attribute_not_exists(id)",
+          },
+        },
+      ],
+    }),
   );
 
   return comment;
@@ -35,16 +52,14 @@ export const getCommentsByPostId = async (postId) => {
         },
         ExclusiveStartKey: lastKey,
         ConsistentRead: true,
-      })
+      }),
     );
 
     comments.push(...(result.Items ?? []));
     lastKey = result.LastEvaluatedKey;
   } while (lastKey);
 
-  return comments.sort((a, b) =>
-    a.createdAt.localeCompare(b.createdAt)
-  );
+  return comments.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 };
 
 export const deleteCommentsByPostId = async (postId) => {
@@ -58,7 +73,7 @@ export const deleteCommentsByPostId = async (postId) => {
           postId,
           id: comment.id,
         },
-      })
+      }),
     );
   }
 };

@@ -5,27 +5,14 @@ export const errorHandler = () => ({
     const statusCode = request.error?.statusCode;
 
     if (statusCode === 422) {
-      request.response = sendError(
-        400,
-        "Invalid or malformed JSON"
-      );
+      request.response = sendError(400, "Invalid or malformed JSON");
       return;
     }
 
-    if (
-      Number.isInteger(statusCode) &&
-      statusCode >= 400 &&
-      statusCode < 500
-    ) {
-      request.response = sendError(
-        statusCode,
-        request.error.message
-      );
+    if (Number.isInteger(statusCode) && statusCode >= 400 && statusCode < 500) {
+      request.response = sendError(statusCode, request.error.message);
     } else {
-      request.response = sendError(
-        500,
-        "Internal Server Error"
-      );
+      request.response = sendError(500, "Internal Server Error");
     }
   },
 });

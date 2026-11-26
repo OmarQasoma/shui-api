@@ -11,14 +11,10 @@ const getSecret = () => {
 };
 
 export const generateToken = (username) => {
-  return jwt.sign(
-    { username },
-    getSecret(),
-    {
-      algorithm: "HS256",
-      expiresIn: "1h",
-    }
-  );
+  return jwt.sign({ username }, getSecret(), {
+    algorithm: "HS256",
+    expiresIn: "1h",
+  });
 };
 
 export const verifyToken = (token) => {
