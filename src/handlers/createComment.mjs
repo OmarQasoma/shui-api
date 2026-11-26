@@ -30,18 +30,18 @@ const createCommentHandler = async (event) => {
   };
 
   try {
-  await createComment(comment);
-} catch (error) {
-  if (error.name === "TransactionCanceledException") {
-    const currentPost = await getPostById(postId);
+    await createComment(comment);
+  } catch (error) {
+    if (error.name === "TransactionCanceledException") {
+      const currentPost = await getPostById(postId);
 
-    if (!currentPost) {
-      return sendError(404, "Post not found");
+      if (!currentPost) {
+        return sendError(404, "Post not found");
+      }
     }
-  }
 
-  throw error;
-}
+    throw error;
+  }
 
   return sendResponse(201, {
     message: "Comment created successfully",

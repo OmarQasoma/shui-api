@@ -6,6 +6,7 @@ import { authMiddleware } from "../middlewares/authMiddleware.mjs";
 
 import {
   getPostById,
+  markPostForDeletion,
   deletePost,
 } from "../repositories/postRepository.mjs";
 
@@ -17,7 +18,9 @@ const deletePostHandler = async (event) => {
   const { postId } = event.pathParameters;
   const { username } = event.user;
 
-  const post = await getPostById(postId);
+  const post = await getPostById(postId, {
+    includePending: true,
+  });
 
   if (!post) {
     return sendError(404, "Post not found");
@@ -28,22 +31,31 @@ const deletePostHandler = async (event) => {
   }
 
   try {
+    await markPostForDeletion(postId, username);
+
+    await deleteCommentsByPostId(postId);
+
     await deletePost(postId, username);
   } catch (error) {
     if (error.name === "ConditionalCheckFailedException") {
-      const currentPost = await getPostById(postId);
+      const currentPost = await getPostById(postId, {
+        includePending: true,
+      });
 
       if (!currentPost) {
         return sendError(404, "Post not found");
       }
 
-      return sendError(403, "You cannot delete this post");
+      if (
+        currentPost.isGuest ||
+        currentPost.username !== username
+      ) {
+        return sendError(403, "You cannot delete this post");
+      }
     }
 
     throw error;
   }
-
-  await deleteCommentsByPostId(postId);
 
   return {
     statusCode: 204,
