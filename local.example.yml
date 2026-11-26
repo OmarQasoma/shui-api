@@ -1,2 +1,3 @@
 deploymentBucket: YOUR_DEPLOYMENT_BUCKET
 deploymentRole: YOUR_DEPLOYMENT_ROLE_ARN
+jwtSecret: YOUR_JWT_SECRET
