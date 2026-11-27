@@ -4,7 +4,7 @@ export const errorHandler = () => ({
   onError: async (request) => {
     const statusCode = request.error?.statusCode;
 
-    if (statusCode === 422) {
+    if (statusCode === 422 || statusCode === 415) {
       request.response = sendError(400, "Invalid or malformed JSON");
       return;
     }
